@@ -1,6 +1,7 @@
 import axios from "axios";
+import { SoapToJsonParser } from "../utils/xmlParser";
 
-const SF_ENDPOINT: string = "https://brave-otter-mtrwvv-dev-ed.trailblaze.my.salesforce.com"
+const SF_ENDPOINT: string = "https://brave-otter-mtrwvv-dev-ed.trailblaze.my.salesforce.com/services/Soap/m/62.0"
 
 export async function sfSoapClient(req: string) {
     try {
@@ -13,10 +14,11 @@ export async function sfSoapClient(req: string) {
             }
         })
 
-        console.log('Data:', response.data);
+        const parser: SoapToJsonParser = new SoapToJsonParser();
+        const result = parser.parse(response.data);
 
-        return response;
+        return result;
     } catch (error: any) {
-        console.error('Erro ao enviar requisição SOAP: ', error.response?.data || error.message)
+        console.error('Erro ao enviar requisição SOAP: ', error.response?.data || error.message);
     }
 }
