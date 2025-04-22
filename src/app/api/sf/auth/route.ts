@@ -7,9 +7,7 @@ export async function GET() {
         redirect_uri: process.env.SF_REDIRECT_URI!,
     })
 
-    const salesforceAuthUrl = `https://login.salesforce.com/services/oauth2/authorize?${params.toString()}`;
-
-    console.log(salesforceAuthUrl);
+    const salesforceAuthUrl = `${process.env.SF_ORG_URL}/services/oauth2/authorize?${params.toString()}`;
 
     return NextResponse.redirect(salesforceAuthUrl);
 } 

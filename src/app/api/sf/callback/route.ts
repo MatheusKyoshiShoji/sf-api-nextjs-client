@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import axios from 'axios'
 
 export async function GET(req: NextRequest) {
     const code = req.nextUrl.searchParams.get('code');
+    const cookieToken = await cookies();
 
     if(!code) {
         return NextResponse.json({ error: 'Missing code' }, { status: 400 });
@@ -23,7 +25,17 @@ export async function GET(req: NextRequest) {
 
         console.log('Salesforce token data', data);
 
-        return NextResponse.redirect('/dashboard?access_token=${data.access_token}');
+        cookieToken.set('sf_access_token', data.access_token, {
+            httpOnly: true,
+            path: '/',
+        })
+
+        cookieToken.set('sf_client_id', data.client_id, {
+            httpOnly: true,
+            path: '/'
+        })
+        
+        return NextResponse.redirect(new URL('/dashboard', req.url));
     } catch (err: any) {
         console.error('Token error:', err.response?.data || err.message);
         return NextResponse.json({ error: 'Failed to get access token' }, { status: 500 });
